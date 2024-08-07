@@ -1,10 +1,10 @@
-function add(n1: number, n2: number, showResult: boolean, phrase: string) {
-  // if (showResult) {
-  //   console.log(`${phrase} ${n1 + n2}`);
-  // }
+// function add(n1: number, n2: number, showResult: boolean, phrase: string) {
+//   // if (showResult) {
+//   //   console.log(`${phrase} ${n1 + n2}`);
+//   // }
 
-  return n1 + n2;
-}
+//   return n1 + n2;
+// }
 
 // const number1 = 5;
 // const number2 = 2.8;
@@ -162,35 +162,35 @@ function add(n1: number, n2: number, showResult: boolean, phrase: string) {
 // 2. assign the type you want to encode into alias
 // You can also store literal types inside an alias
 
-type Combinable = number | string;
-type ConversonDescriptor = "as-number" | "as-text";
+// type Combinable = number | string;
+// type ConversonDescriptor = "as-number" | "as-text";
 
-function combine(
-  input1: Combinable,
-  input2: Combinable,
-  resultConversion: ConversonDescriptor
-) {
-  let result;
-  if (
-    (typeof input1 === "number" && typeof input2 === "number") ||
-    resultConversion === "as-number"
-  ) {
-    result = +input1 + +input2;
-  } else {
-    result = input1.toString() + input2.toString();
-  }
+// function combine(
+//   input1: Combinable,
+//   input2: Combinable,
+//   resultConversion: ConversonDescriptor
+// ) {
+//   let result;
+//   if (
+//     (typeof input1 === "number" && typeof input2 === "number") ||
+//     resultConversion === "as-number"
+//   ) {
+//     result = +input1 + +input2;
+//   } else {
+//     result = input1.toString() + input2.toString();
+//   }
 
-  return result;
-}
+//   return result;
+// }
 
-const combinedAges = combine(30, 26, "as-number");
-console.log(combinedAges);
+// const combinedAges = combine(30, 26, "as-number");
+// console.log(combinedAges);
 
-const combinedStringAges = combine("30", "26", "as-number");
-console.log(combinedStringAges);
+// const combinedStringAges = combine("30", "26", "as-number");
+// console.log(combinedStringAges);
 
-const combinedNames = combine("anna", "jonas", "as-text");
-console.log(combinedNames);
+// const combinedNames = combine("anna", "jonas", "as-text");
+// console.log(combinedNames);
 
 /****************************************/
 /****************************************/
@@ -199,32 +199,107 @@ console.log(combinedNames);
 // You're not limited to storing union types though - you can also provide an alias to a (possibly complex) object type.
 // For example:
 
-type UserAlias1 = { name: string; age: number };
-const u1: UserAlias1 = { name: "Max", age: 30 }; // this works!
-// This allows you to avoid unnecessary repetition and manage types centrally.
-// For example, you can simplify this code:
+// type UserAlias1 = { name: string; age: number };
+// const u1: UserAlias1 = { name: "Max", age: 30 }; // this works!
+// // This allows you to avoid unnecessary repetition and manage types centrally.
+// // For example, you can simplify this code:
 
-function greet1(user: { name: string; age: number }) {
-  console.log("Hi, I am " + user.name);
+// function greet1(user: { name: string; age: number }) {
+//   console.log("Hi, I am " + user.name);
+// }
+
+// function isOlder1(user: { name: string; age: number }, checkAge: number) {
+//   return checkAge > user.age;
+// }
+
+// // To:
+
+// type UserAlias2 = { name: string; age: number };
+
+// function greet2(user: UserAlias2) {
+//   console.log("Hi, I am " + user.name);
+// }
+
+// function isOlder2(user: UserAlias2, checkAge: number) {
+//   return checkAge > user.age;
+// }
+
+// type USER = { name: string } | string;
+
+// let u2: USER = { name: "max" };
+// u2 = "Michhael";
+
+/****************************************/
+/****************************************/
+/** FUNCTION RETURN TYPES & 'void' **/
+
+// function add(n1: number, n2: number): number {
+//   return n1 + n2;
+// }
+
+// function printResult(num: number): void {
+//   console.log("Result: " + num);
+// }
+
+// // : void -> the function deliberately doesn't have a return statement
+// // : undefined -> function has a 'return' keyword but the function doesn't return any value and should produce 'undefined'
+// printResult(add(5, 12));
+
+/****************************************/
+/****************************************/
+/* FUNCTION AS TYPES */
+// Function types are types which describe a function
+
+// // let combineValues: Function;
+
+// // let combineValues: (a: number, b: number) => number;
+// // The above code implies that the variable 'combineValues' should accept any function
+// // with 2 parameters, each parameter being a number type and the function would
+// // return a value of type number
+
+// combineValues = add;
+// // combineValues = 5; // ERROR: 5 is a number and NOT a Function
+// // combineValues = printResult; // ERROR: printResult is function which only takes 1 parameter
+
+// console.log(combineValues(9, 8));
+
+// /****************************************/
+// /****************************************/
+// /* FUNCTION TYPES & CALLBACKS */
+
+// function addAndHandle(n1: number, n2: number, callBack: (num: number) => void) {
+//   const result = n1 + n2;
+//   callBack(result);
+// }
+
+// // NOTE: callback function can still return something even when function is set to 'void
+// addAndHandle(1, 2, (res) => console.log(res + 6));
+
+// // function xzc(num: number): void {
+// //   return "hi";
+// // }
+
+/****************************************/
+/****************************************/
+/* The 'unknnown' TYPE */
+// => 'unknown' is not same as 'any'
+// => unknown is more restrictive than any
+// => you may need an extra type check to assign 'unknown' to a value with fixed type
+
+let userInput: unknown;
+let userName: string;
+
+userInput = 5;
+userInput = "Max";
+// userName = userInput; // ERROR: Type 'unknown' is not assignable to type 'string'
+
+/****************************************/
+/****************************************/
+/* The 'never' TYPE */
+// we use this type replacing void when we 100% know that function won't return anything
+
+function generateError(message: string, code: number): never {
+  throw { message: message, errorCode: code }; // crashes the script and doesn't return anything
 }
 
-function isOlder1(user: { name: string; age: number }, checkAge: number) {
-  return checkAge > user.age;
-}
-
-// To:
-
-type UserAlias2 = { name: string; age: number };
-
-function greet2(user: UserAlias2) {
-  console.log("Hi, I am " + user.name);
-}
-
-function isOlder2(user: UserAlias2, checkAge: number) {
-  return checkAge > user.age;
-}
-
-type USER = { name: string } | string;
-
-let u2: USER = { name: "max" };
-u2 = "Michhael";
+generateError("An error occurred!", 500);
