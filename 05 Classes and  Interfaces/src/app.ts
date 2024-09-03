@@ -1,116 +1,52 @@
-class Department {
-  static fiscalYear = 2020; // static property: we access them directly on the class without the 'new' keyword
-  // private id: string; // LONGHAND
-  // name: string; // LONGHAND
+/*
+#WHAT IS AN INTERFACE
+An interface describes structure for an object. We can use it to describe how an object should look like.
+We create an interface with an 'interface' keyword which only exists in typescript
+An interface can NOT have an initiialiser. Eg - name: string = "Max"; // ERROR
+We can use an interface to type check an object.
+We can NOT add 'private' keyword in an interface property or method.
+We can use 'readonly'
+We can also extend interfaces
+You can also define optional properties and methods in interfaces
+ */
 
-  // MODIFIER ('public, 'private')
-  // properties and methods with keyword 'private' can NOT be accessed outside the current class
-  // private employees: string[] = []; // You can only access 'employees' in Department and not in any of the inheritance of 'Department'
+interface Named {
+  readonly name?: string; // Optional Property
+  outputName?: string; // Optional Property
 
-  // 'protected' allows the property to be used in all the inheritance of 'Department'
-  protected employees: string[] = [];
+  printName?(name: string): void; // Optional Method
+}
 
-  // LONGHAND
-  // constructor( id: string,  arg: string) {
-  //   this.name = name;
-  //   this.id = id;
-  // }
+interface Greetable extends Named {
+  greet(phrase: string): void;
+}
 
-  // SHORTHAND
-  // readonly: you can only write to this propertry once on initialisation and can not change it again
-  constructor(private readonly id: string, public name: string) {}
+class Person implements Greetable {
+  name?: string;
+  age = 25;
 
-  // Adding type safety by declaring that the method - 'describe' can only be called in 'INSTANCE' of 'Department' and nowhere else
-  describe(this: Department) {
-    console.log(`Department ${this.id}: ${this.name}`);
-    console.log("Fiscal Year:", Department.fiscalYear); // You DO NOT access static properties with 'this' keyword. Its because 'static' properties and functions are detached from instances
+  constructor(name?: string) {
+    if (name) {
+      this.name = name;
+    }
   }
 
-  addEmployee(employee: string) {
-    // this.id = "02"; // ERROR: "Cannot assign to 'id' because it is a read-only property."
-    this.employees.push(employee);
-  }
-
-  printEmployeeInformation() {
-    console.log(this.employees.length);
-    console.log(this.employees.join(", "));
-  }
-
-  // static funcitons: we call them directly on the class without the 'new' keyword and without instantiating the class
-  static createEmployee(name: string) {
-    return { name };
+  greet(phrase: string) {
+    console.log(this.name ? `${phrase} ${this.name}` : phrase);
   }
 }
 
-const accounting = new Department("01", "Accounting");
+let user1: Greetable;
 
-console.log(accounting);
+user1 = new Person();
+console.log(user1);
 
-// const accountingCopy = { describe: accounting.describe }; //ERROR: "roperty 'name' is missing in type '{ describe: (this: Department) => void; }' but required in type 'Department'."
-// const accountingCopy = { name: "HR", describe: accounting.describe }; // NO ERROR since we explicitly add a name property and the current object now matches the type of Department. But if we add another property in 'Department', We'll again get the above error
+user1.greet("Hi There!");
 
-// accountingCopy.describe();
-
-accounting.addEmployee("Max");
-accounting.addEmployee("John");
-
-accounting.describe();
-accounting.printEmployeeInformation();
-
-// accounting.employees.push("anna"); // ERROR: "Property 'employees' is private and only accessible within class 'Department'."
-
-const employee1 = Department.createEmployee("Clark");
-console.log(employee1);
-
-console.log("--------------------INHERITANCE-------------------");
-
-class ITDepartment extends Department {
-  private lastReport: string;
-
-  // GET: To read a value
-  get mostRecentReport() {
-    if (this.lastReport) {
-      return this.lastReport;
-    }
-
-    throw new Error("No Report Found");
-  }
-
-  // SET: To set a value
-  set renderAdminsAndReports(value: string[]) {
-    if (value.length === 0) {
-      throw new Error("Currently 0 Admins");
-    }
-    this.showAdmins(value);
-    console.log(this.lastReport);
-  }
-
-  constructor(id: string, public admins: string[], public reports: string[]) {
-    super(id, "IT");
-    this.admins = admins;
-    this.lastReport = reports[0];
-  }
-
-  showAdmins(array: string[]) {
-    console.log(`${array.length} Admins: `, array.join(", "));
-  }
-
-  addEmployee(name: string) {
-    if (name === "Max") {
-      return;
-    }
-    this.employees.push(name);
-  }
+// INTERFACES AS FUNCTION TYPES
+interface AddFn {
+  (a: number, b: number): number;
 }
 
-const IT = new ITDepartment("01", ["David"], ["Q1", "Q2"]);
-console.log(IT);
-IT.addEmployee("David");
-IT.addEmployee("Mathew");
-
-IT.describe();
-IT.printEmployeeInformation();
-// IT.showAdmins();
-
-console.log(IT.mostRecentReport);
-IT.renderAdminsAndReports = IT.admins;
+let add: AddFn;
+add = (n1: number, n2: number) => n1 + n2;
