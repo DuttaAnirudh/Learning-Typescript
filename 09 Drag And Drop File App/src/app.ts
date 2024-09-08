@@ -1,3 +1,58 @@
+enum ProjectStatus {
+  Active,
+  Finished,
+}
+
+class Project {
+  constructor(
+    public id: string,
+    public title: string,
+    public description: string,
+    public people: number,
+    public status: ProjectStatus
+  ) {}
+}
+
+// PROJECT STATE MANAGEMENT
+type Listener = (items: Project[]) => void;
+
+class ProjectState {
+  private listeners: Listener[] = [];
+  private projects: Project[] = [];
+
+  private static instance: ProjectState;
+
+  private constructor() {}
+
+  static getInstance() {
+    if (this.instance) {
+      return this.instance;
+    }
+
+    this.instance = new ProjectState();
+    return this.instance;
+  }
+
+  addListener(listenerFn: Listener) {
+    this.listeners.push(listenerFn);
+  }
+
+  addProject(title: string, desciption: string, numOfPeople: number) {
+    const newProject = new Project(
+      Math.random().toString(),
+      title,
+      desciption,
+      numOfPeople,
+      ProjectStatus.Active
+    );
+    this.projects.push(newProject);
+
+    this.listeners.map((listenerFn) => listenerFn(this.projects.slice()));
+  }
+}
+
+const projectState = ProjectState.getInstance();
+
 // INPUT VALIDATION
 interface Validatable {
   value: string | number;
@@ -155,6 +210,8 @@ class ProjectInput {
       const [title, desc, people] = userInputData;
       console.log(title, desc, people);
 
+      projectState.addProject(title, desc, people);
+
       this.clearInputFields();
     }
   }
@@ -178,6 +235,7 @@ class ProjectList {
   templateElement: HTMLTemplateElement;
   hostElement: HTMLDivElement;
   element: HTMLElement;
+  assignedProjects: Project[];
 
   constructor(private type: "active" | "finished") {
     // 1. fetching the template element
@@ -187,6 +245,7 @@ class ProjectList {
 
     // 2. fetching the div where we add the elements
     this.hostElement = document.getElementById("app")! as HTMLDivElement;
+    this.assignedProjects = [];
 
     // 3. taking out the all the content out of the template element(including deeply nested elements)
     const importedNode = document.importNode(
@@ -200,8 +259,34 @@ class ProjectList {
     // 5. adding an id(user-input) to the 'element'
     this.element.id = `${this.type}-projects`;
 
+    projectState.addListener((projects: any[]) => {
+      const relevantProjects = projects.filter((prj) => {
+        if (this.type === "active") {
+          return prj.status === ProjectStatus.Active;
+        }
+
+        return prj.status === ProjectStatus.Finished;
+      });
+      this.assignedProjects = relevantProjects;
+      this.renderProjects();
+    });
+
     this.attach();
     this.renderContent();
+  }
+
+  renderProjects() {
+    const listEl = document.getElementById(
+      `${this.type}-project-list`
+    )! as HTMLUListElement;
+
+    listEl.innerHTML = "";
+
+    this.assignedProjects.map((prjItem) => {
+      const listItem = document.createElement("li");
+      listItem.textContent = prjItem.title;
+      listEl.appendChild(listItem);
+    });
   }
 
   private renderContent() {
