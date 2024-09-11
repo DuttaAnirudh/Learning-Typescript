@@ -1,7 +1,7 @@
-import { Component } from "./base-component.js";
-import { AutoBind } from "../decorators/autobind.js";
-import { Validatable, validateInput } from "../util/validation.js";
-import { projectState } from "../state/project.js";
+import { Component } from "./base-component";
+import { AutoBind } from "../decorators/autobind";
+import { Validatable, validateInput } from "../util/validation";
+import { projectState } from "../state/project";
 
 /*******************************************************
  * CLASS : PROJECT INPUT FORM

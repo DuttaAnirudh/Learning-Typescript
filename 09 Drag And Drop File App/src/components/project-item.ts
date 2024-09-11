@@ -1,7 +1,7 @@
-import { Dragabble } from "../models/drag-drop.js";
-import { Component } from "./base-component.js";
-import { Project } from "../models/project.js";
-import { AutoBind } from "../decorators/autobind.js";
+import { Dragabble } from "../models/drag-drop";
+import { Component } from "./base-component";
+import { Project } from "../models/project";
+import { AutoBind } from "../decorators/autobind";
 
 /*******************************************************
  * CLASS : PROJECT ITEM
